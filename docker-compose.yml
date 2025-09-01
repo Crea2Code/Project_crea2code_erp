@@ -24,7 +24,7 @@ services:
       dockerfile: docker/frontend.Dockerfile
     container_name: erp_frontend
     volumes:
-      - ./frontend/erp-sneat:/app
+      - ./frontend/erp-tailwind:/app
     depends_on:
       - backend
 
@@ -33,7 +33,7 @@ services:
     container_name: erp_nginx
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./frontend/erp-sneat/out:/usr/share/nginx/html  # dossier build React/Next
+      - ./frontend/erp-tailwind/out:/usr/share/nginx/html  # dossier build React/Next
     ports:
       - "80:80"
     depends_on:
@@ -44,14 +44,31 @@ services:
     image: postgres:15
     container_name: erp_db
     restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
     ports:
-      - "5432:5432"
+        - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: my_pgadmin
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${PGADMIN_PORT}:80"
+    depends_on:
+      - db
+    networks:
+      - app_network
 
 volumes:
   postgres_data:
+
+networks:
+  app_network:
+    driver: bridge

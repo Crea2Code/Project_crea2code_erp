@@ -1,5 +1,7 @@
 // next.config.js
-module.exports = {
-  output: 'export', // Force un export HTML statique
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
 }
+
 module.exports = nextConfig
